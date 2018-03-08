@@ -3,7 +3,6 @@ package pop
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -27,15 +26,15 @@ func MigrationCreate(path, name, ext string, up, down []byte) error {
 	if err != nil {
 		return errors.Wrapf(err, "couldn't write up migration %s", upf)
 	}
-	fmt.Printf("> %s\n", upf)
+	Logger.WithField("file", upf).Info("Created 'up' migration")
 
 	downf := filepath.Join(path, (fmt.Sprintf("%s_%s.down.%s", s, name, ext)))
 	err = ioutil.WriteFile(downf, down, 0666)
 	if err != nil {
-		return errors.Wrapf(err, "couldn't write up migration %s", downf)
+		return errors.Wrapf(err, "couldn't write down migration %s", downf)
 	}
 
-	fmt.Printf("> %s\n", downf)
+	Logger.WithField("file", downf).Info("Created 'down' migration")
 	return nil
 }
 
@@ -46,7 +45,7 @@ func (c *Connection) MigrateUp(path string) error {
 	if ok {
 		warningMsg = fmt.Sprintf("%s Called from %s:%d", warningMsg, file, no)
 	}
-	log.Println(warningMsg)
+	Logger.Warning(warningMsg)
 
 	mig, err := NewFileMigrator(path, c)
 	if err != nil {
@@ -62,7 +61,7 @@ func (c *Connection) MigrateDown(path string, step int) error {
 	if ok {
 		warningMsg = fmt.Sprintf("%s Called from %s:%d", warningMsg, file, no)
 	}
-	log.Println(warningMsg)
+	Logger.Warning(warningMsg)
 
 	mig, err := NewFileMigrator(path, c)
 	if err != nil {
@@ -78,7 +77,7 @@ func (c *Connection) MigrateStatus(path string) error {
 	if ok {
 		warningMsg = fmt.Sprintf("%s Called from %s:%d", warningMsg, file, no)
 	}
-	log.Println(warningMsg)
+	Logger.Warning(warningMsg)
 
 	mig, err := NewFileMigrator(path, c)
 	if err != nil {
@@ -94,7 +93,7 @@ func (c *Connection) MigrateReset(path string) error {
 	if ok {
 		warningMsg = fmt.Sprintf("%s Called from %s:%d", warningMsg, file, no)
 	}
-	log.Println(warningMsg)
+	Logger.Warning(warningMsg)
 
 	mig, err := NewFileMigrator(path, c)
 	if err != nil {

@@ -18,10 +18,15 @@ type ForeignKey struct {
 }
 
 func (f fizzer) AddForeignKey() interface{} {
-	return func(table string, column string, refs interface{}, options Options) {
+	return func(table string, column string, refs interface{}, options Options) error {
+		fkr, err := parseForeignKeyRef(refs)
+		if err != nil {
+			return err
+		}
+
 		fk := ForeignKey{
 			Column:     column,
-			References: parseForeignKeyRef(refs),
+			References: fkr,
 			Options:    options,
 		}
 
@@ -35,6 +40,8 @@ func (f fizzer) AddForeignKey() interface{} {
 			Name:        table,
 			ForeignKeys: []ForeignKey{fk},
 		}))
+
+		return nil
 	}
 }
 
@@ -52,16 +59,19 @@ func (f fizzer) DropForeignKey() interface{} {
 	}
 }
 
-func parseForeignKeyRef(refs interface{}) (fkr ForeignKeyRef) {
+func parseForeignKeyRef(refs interface{}) (ForeignKeyRef, error) {
+	fkr := ForeignKeyRef{}
+
 	refMap, ok := refs.(map[string]interface{})
+
 	if !ok {
-		fmt.Printf(`invalid references format %s\nmust be "{"table": ["colum1", "column2"]}"`, refs)
-		return
+		return fkr, fmt.Errorf(`invalid references format %s\nmust be "{"table": ["colum1", "column2"]}"`, refs)
 	}
+
 	if len(refMap) != 1 {
-		fmt.Printf("only one table is supported as Foreign key reference")
-		return
+		return fkr, fmt.Errorf("only one table is supported as Foreign key reference")
 	}
+
 	for table, columns := range refMap {
 		fkr.Table = table
 		for _, c := range columns.([]interface{}) {
@@ -69,5 +79,5 @@ func parseForeignKeyRef(refs interface{}) (fkr ForeignKeyRef) {
 		}
 	}
 
-	return
+	return fkr, nil
 }

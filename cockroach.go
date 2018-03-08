@@ -93,7 +93,7 @@ func (p *cockroach) CreateDB() error {
 		return errors.Wrapf(err, "error creating Cockroach database %s", deets.Database)
 	}
 
-	fmt.Printf("created database %s\n", deets.Database)
+	Logger.WithField("database", deets.Database).Info("Created database")
 	return nil
 }
 
@@ -112,7 +112,7 @@ func (p *cockroach) DropDB() error {
 		return errors.Wrapf(err, "error dropping Cockroach database %s", deets.Database)
 	}
 
-	fmt.Printf("dropped database %s\n", deets.Database)
+	Logger.WithField("database", deets.Database).Info("Dropped database")
 	return nil
 }
 
@@ -188,7 +188,7 @@ func (p *cockroach) DumpSchema(w io.Writer) error {
 		return err
 	}
 
-	fmt.Printf("dumped schema for %s\n", p.Details().Database)
+	Logger.WithField("database", p.Details().Database).Info("Dumped schema")
 	return nil
 }
 
@@ -224,7 +224,7 @@ func (p *cockroach) LoadSchema(r io.Reader) error {
 		return errors.WithMessage(err, bb.String())
 	}
 
-	fmt.Printf("loaded schema for %s\n", p.Details().Database)
+	Logger.WithField("database", p.Details().Database).Info("Loaded schema")
 	return nil
 }
 

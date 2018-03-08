@@ -17,7 +17,7 @@ func (f fizzer) AddIndex() interface{} {
 		i := Index{}
 		switch t := columns.(type) {
 		default:
-			fmt.Printf("unexpected type %T\n", t) // %T prints whatever type t has
+			Logger.WithField("type", t).Warnf("Unexpected type")
 		case string:
 			i.Columns = []string{t}
 		case []interface{}:

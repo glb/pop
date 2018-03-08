@@ -31,10 +31,15 @@ func (t *Table) Column(name string, colType string, options map[string]interface
 	t.Columns = append(t.Columns, c)
 }
 
-func (t *Table) ForeignKey(column string, refs interface{}, options Options) {
+func (t *Table) ForeignKey(column string, refs interface{}, options Options) error {
+	fkr, err := parseForeignKeyRef(refs)
+	if err != nil {
+		return err
+	}
+
 	fk := ForeignKey{
 		Column:     column,
-		References: parseForeignKeyRef(refs),
+		References: fkr,
 		Options:    options,
 	}
 
@@ -45,6 +50,7 @@ func (t *Table) ForeignKey(column string, refs interface{}, options Options) {
 	}
 
 	t.ForeignKeys = append(t.ForeignKeys, fk)
+	return nil
 }
 
 func (t *Table) Timestamp(name string) {

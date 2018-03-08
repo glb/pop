@@ -1,7 +1,5 @@
 package pop
 
-import "fmt"
-
 // Query is the main value that is used to build up a query
 // to be executed against the `Connection`.
 type Query struct {
@@ -101,7 +99,7 @@ func (c *Connection) Where(stmt string, args ...interface{}) *Query {
 // 	q.Where("id in (?)", 1, 2, 3)
 func (q *Query) Where(stmt string, args ...interface{}) *Query {
 	if q.RawSQL.Fragment != "" {
-		fmt.Println("Warning: Query is setup to use raw SQL")
+		Logger.Warning("Query is set up to use raw SQL, not adding WHERE clause")
 		return q
 	}
 	q.whereClauses = append(q.whereClauses, clause{stmt, args})
@@ -120,7 +118,7 @@ func (c *Connection) Order(stmt string) *Query {
 // 	q.Order("name desc")
 func (q *Query) Order(stmt string) *Query {
 	if q.RawSQL.Fragment != "" {
-		fmt.Println("Warning: Query is setup to use raw SQL")
+		Logger.Warning("Query is set up to use raw SQL, not adding ORDER clause")
 		return q
 	}
 	q.orderClauses = append(q.orderClauses, clause{stmt, []interface{}{}})
